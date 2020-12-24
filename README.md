@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MulanPSL-2.0
+SPDX-FileCopyrightText: 2014-2020 Huawei Technologies Co., Ltd.
+-->
 # bounds_checking_function
 
 #### 介绍

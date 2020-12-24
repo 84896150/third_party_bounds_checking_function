@@ -13,6 +13,8 @@
  * Author: lishunda
  * Create: 2014-02-25
  */
+// SPDX-License-Identifier: MulanPSL-2.0
+// SPDX-FileCopyrightText: 2014-2020 Huawei Technologies Co., Ltd.
 
 /* If some platforms don't have wchar.h, dont't include it */
 #if !(defined(SECUREC_VXWORKS_PLATFORM))

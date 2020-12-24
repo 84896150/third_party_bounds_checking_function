@@ -15,6 +15,8 @@
  * Author: lishunda
  * Create: 2014-02-25
  */
+// SPDX-License-Identifier: MulanPSL-2.0
+// SPDX-FileCopyrightText: 2014-2020 Huawei Technologies Co., Ltd.
 
 #ifndef OUTPUT_INL_2B263E9C_43D8_44BB_B17A_6D2033DECEE5
 #define OUTPUT_INL_2B263E9C_43D8_44BB_B17A_6D2033DECEE5
