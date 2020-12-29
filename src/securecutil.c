@@ -14,6 +14,8 @@
  * Author: lishunda
  * Create: 2014-02-25
  */
+// SPDX-License-Identifier: MulanPSL-2.0
+// SPDX-FileCopyrightText: 2014-2020 Huawei Technologies Co., Ltd.
 
 /* Avoid duplicate header files,not include securecutil.h */
 #include "securecutil.h"

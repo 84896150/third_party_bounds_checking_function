@@ -14,6 +14,8 @@
  * Author: lishunda
  * Create: 2014-02-25
  */
+// SPDX-License-Identifier: MulanPSL-2.0
+// SPDX-FileCopyrightText: 2014-2020 Huawei Technologies Co., Ltd.
 
 #ifndef SECURECTYPE_H_A7BBB686_AADA_451B_B9F9_44DACDAE18A7
 #define SECURECTYPE_H_A7BBB686_AADA_451B_B9F9_44DACDAE18A7

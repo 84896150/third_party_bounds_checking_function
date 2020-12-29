@@ -12,6 +12,9 @@
  * Author: lishunda
  * Create: 2014-02-25
  */
+// SPDX-License-Identifier: MulanPSL-2.0
+// SPDX-FileCopyrightText: 2014-2020 Huawei Technologies Co., Ltd.
+
 /*
  * [Standardize-exceptions] Use unsafe function: Portability
  * [reason] Use unsafe function to implement security function to maintain platform compatibility.
