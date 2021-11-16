@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 if (defined(ohos_lite)) {
   import("//build/lite/config/component/lite_component.gni")
   import("//build/lite/ndk/ndk.gni")
+  if ("$ohos_kernel_type" == "liteos_m") {
+    import("//kernel/liteos_m/liteos.gni")
+  }
 } else {
   import("//build/ohos.gni")
 }
@@ -66,6 +70,23 @@ libsec_sources = [
 ]
 
 if (defined(ohos_lite)) {
+  if ("$ohos_kernel_type" == "liteos_m") {
+    if (defined(LOSCFG_KERNEL_LMS)) {
+      if ("$ohos_build_compiler_specified" == "gcc") {
+        cflags = [ "-fsanitize=kernel-address" ]
+      } else {
+        cflags = [
+          "-fsanitize=kernel-address",
+          "-mllvm",
+          "-asan-instrumentation-with-call-threshold=0",
+          "-mllvm",
+          "-asan-stack=0",
+          "-mllvm",
+          "-asan-globals=0",
+        ]
+      }
+    }
+  }
   lite_library("libsec_static") {
     target_type = "static_library"
     sources = libsec_sources
