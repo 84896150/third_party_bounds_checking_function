@@ -15,7 +15,7 @@
 
 #include "secureprintoutput.h"
 
-#if SECUREC_ENABLE_VSNPRINTF
+// #if SECUREC_ENABLE_VSNPRINTF
 /*
  * <FUNCTION DESCRIPTION>
  *    The vsnprintf_s function is equivalent to the vsnprintf function
@@ -82,7 +82,7 @@ int vsnprintf_s(char *strDest, size_t destMax, size_t count, const char *format,
 #if SECUREC_IN_KERNEL
 EXPORT_SYMBOL(vsnprintf_s);
 #endif
-#endif
+// #endif
 
 #if SECUREC_SNPRINTF_TRUNCATED
 /*

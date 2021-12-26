@@ -15,7 +15,7 @@
 
 #include "securec.h"
 
-#if SECUREC_ENABLE_SNPRINTF
+// #if SECUREC_ENABLE_SNPRINTF
 /*
  * <FUNCTION DESCRIPTION>
  *    The snprintf_s function is equivalent to the snprintf function
@@ -60,7 +60,7 @@ int snprintf_s(char *strDest, size_t destMax, size_t count, const char *format, 
 #if SECUREC_IN_KERNEL
 EXPORT_SYMBOL(snprintf_s);
 #endif
-#endif
+// #endif
 
 #if SECUREC_SNPRINTF_TRUNCATED
 /*
