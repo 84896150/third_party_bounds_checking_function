@@ -16,6 +16,7 @@ if (defined(ohos_lite)) {
   import("//build/lite/config/component/lite_component.gni")
   import("//build/lite/ndk/ndk.gni")
 } else {
+  import("//build/lite/config/component/lite_component.gni")
   import("//build/ohos.gni")
 }
 
@@ -97,5 +98,10 @@ if (defined(ohos_lite)) {
       "-D_INC_STDLIB_S",
       "-D_INC_MEMORY_S",
     ]
+  }
+  lite_library("libsec_shared") {
+    target_type = "shared_library"
+    sources = libsec_sources
+    public_configs = [ ":libsec_public_config" ]
   }
 }
