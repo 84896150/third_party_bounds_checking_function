@@ -16,7 +16,11 @@ if (defined(ohos_lite)) {
   import("//build/lite/config/component/lite_component.gni")
   import("//build/lite/ndk/ndk.gni")
 } else {
-  import("//build/ohos.gni")
+    if (defined(ark_flag)){
+      import("//build/ark.gni")
+    }else{
+      import("//build/ohos.gni")
+    }
 }
 
 import("libsec_src.gni")
@@ -50,7 +54,7 @@ if (defined(ohos_lite)) {
     deps = [ ":sec_shared" ]
     head_files = [ "include" ]
   }
-} else {
+} else if(!defined(ark_flag)){
   ohos_static_library("libsec_static") {
     sources = libsec_sources
     public_configs = [ ":libsec_public_config" ]
