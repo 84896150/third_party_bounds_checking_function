@@ -29,20 +29,6 @@ config("libsec_public_config") {
   include_dirs = [ "include" ]
 }
 
-source_set("libsec_static_set"){
-  sources = libsec_sources
-  public_configs = [ ":libsec_public_config" ]
-  cflags = [
-    "-D_INC_STRING_S",
-    "-D_INC_WCHAR_S",
-    "-D_SECIMP=//",
-    "-D_STDIO_S_DEFINED",
-    "-D_INC_STDIO_S",
-    "-D_INC_STDLIB_S",
-    "-D_INC_MEMORY_S",
-  ]
-}
-
 if (defined(ohos_lite)) {
   lite_library("libsec_static") {
     target_type = "static_library"
@@ -68,18 +54,36 @@ if (defined(ohos_lite)) {
     deps = [ ":sec_shared" ]
     head_files = [ "include" ]
   }
-} else if(defined(ark_flag)){
-  ark_static_library("libsec_static") {
-    deps = [ ":libsec_static_set" ]
-  }
-  ark_shared_library("libsec_shared") {
-    deps = [ ":libsec_static_set" ]
-  }
-}else {
+} else if(!defined(ark_flag)){
   ohos_static_library("libsec_static") {
-    deps = [ ":libsec_static_set" ]
+    sources = libsec_sources
+    public_configs = [ ":libsec_public_config" ]
+    cflags = [
+      "-D_INC_STRING_S",
+      "-D_INC_WCHAR_S",
+      "-D_SECIMP=//",
+      "-D_STDIO_S_DEFINED",
+      "-D_INC_STDIO_S",
+      "-D_INC_STDLIB_S",
+      "-D_INC_MEMORY_S",
+    ]
   }
   ohos_shared_library("libsec_shared") {
-    deps = [ ":libsec_static_set" ]
+    sources = libsec_sources
+    public_configs = [ ":libsec_public_config" ]
+    cflags = [
+      "-D_INC_STRING_S",
+      "-D_INC_WCHAR_S",
+      "-D_SECIMP=//",
+      "-D_STDIO_S_DEFINED",
+      "-D_INC_STDIO_S",
+      "-D_INC_STDLIB_S",
+      "-D_INC_MEMORY_S",
+    ]
+    part_name = "utils_base"
+    install_images = [
+      "system",
+      "updater",
+    ]
   }
 }
