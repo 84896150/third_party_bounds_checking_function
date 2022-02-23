@@ -16,13 +16,18 @@ if (defined(ohos_lite)) {
   import("//build/lite/config/component/lite_component.gni")
   import("//build/lite/ndk/ndk.gni")
 } else {
-  import("//build/ohos.gni")
+  if (!defined(ark_independent_build)) {
+    import("//build/ohos.gni")
+  } else {
+    import("$build_root/ark.gni")
+  }
 }
 
 import("libsec_src.gni")
 
 config("libsec_public_config") {
   include_dirs = [ "include" ]
+  cflags_cc = [ "-fPIC" ]
 }
 
 if (defined(ohos_lite)) {
@@ -67,6 +72,7 @@ if (defined(ohos_lite)) {
   ohos_shared_library("libsec_shared") {
     sources = libsec_sources
     public_configs = [ ":libsec_public_config" ]
+    subsystem_name = "securec"
     cflags = [
       "-D_INC_STRING_S",
       "-D_INC_WCHAR_S",
@@ -76,10 +82,12 @@ if (defined(ohos_lite)) {
       "-D_INC_STDLIB_S",
       "-D_INC_MEMORY_S",
     ]
-    part_name = "utils_base"
-    install_images = [
-      "system",
-      "updater",
-    ]
+    part_name = "thirdparty_bounds_checking_function"
+    if (!defined(ark_independent_build)) {
+      install_images = [
+        "system",
+        "updater",
+      ]
+    }
   }
 }
