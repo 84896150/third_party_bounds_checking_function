@@ -16,13 +16,18 @@ if (defined(ohos_lite)) {
   import("//build/lite/config/component/lite_component.gni")
   import("//build/lite/ndk/ndk.gni")
 } else {
-  import("//build/ohos.gni")
+  if (!defined(ark_independent_build)) {
+    import("//build/ohos.gni")
+  } else {
+    import("$build_root/ark.gni")
+  }
 }
 
 import("libsec_src.gni")
 
 config("libsec_public_config") {
   include_dirs = [ "include" ]
+  cflags_cc = [ "-fPIC" ]
 }
 
 if (defined(ohos_lite)) {
@@ -78,9 +83,11 @@ if (defined(ohos_lite)) {
       "-D_INC_MEMORY_S",
     ]
     part_name = "thirdparty_bounds_checking_function"
-    install_images = [
-      "system",
-      "updater",
-    ]
+    if (!defined(ark_independent_build)) {
+      install_images = [
+        "system",
+        "updater",
+      ]
+    }
   }
 }
