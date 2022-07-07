@@ -15,12 +15,19 @@
 if (defined(ohos_lite)) {
   import("//build/lite/config/component/lite_component.gni")
 } else {
-  import("//build/ohos.gni")
+  if (!defined(ark_standalone_build)) {
+    import("//build/ohos.gni")
+  } else {
+    import("//js_runtime/build/ark.gni")
+  }
 }
 import("libsec_src.gni")
 
 config("libsec_public_config") {
   include_dirs = [ "include" ]
+  if (defined(ark_standalone_build)) {
+    cflags_cc = [ "-fPIC" ]
+  }
 }
 
 if (defined(ohos_lite)) {
