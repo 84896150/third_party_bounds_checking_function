@@ -46,7 +46,8 @@
 #ifndef SECUREC_DEFINED_ERRNO_TYPE
 #define SECUREC_DEFINED_ERRNO_TYPE
 /* Just check whether macrodefinition exists. */
-#ifndef errno_t
+#ifndef ERROR_T
+#define ERROR_T
 typedef int errno_t;
 #endif
 #endif
