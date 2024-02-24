@@ -27,9 +27,19 @@
                 {
                     "name": "//third_party/bounds_checking_function:libsec_shared",
                     "header": {
-                    "header_files": [
-                        "securec.h",
-                        "securectype.h"
+                        "header_files": [
+                            "securec.h",
+                            "securectype.h"
+                        ],
+                        "header_base": "//third_party/bounds_checking_function/include"
+                    }
+                },
+                {
+                    "name": "//third_party/bounds_checking_function:libsec_static",
+                    "header": {
+                        "header_files": [
+                            "securec.h",
+                            "securectype.h"
                         ],
                         "header_base": "//third_party/bounds_checking_function/include"
                     }
