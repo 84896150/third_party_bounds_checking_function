@@ -65,8 +65,6 @@ if (defined(ohos_lite)) {
     sources = libsec_sources
     public_configs = [ ":libsec_public_config" ]
 
-    branch_protector_ret = "pac_ret"
-
     cflags = [
       "-D_INC_STRING_S",
       "-D_INC_WCHAR_S",
@@ -86,7 +84,6 @@ if (defined(ohos_lite)) {
     install_images = [
       "system",
       "updater",
-      "ramdisk",
     ]
   }
 }
