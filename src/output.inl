@@ -99,6 +99,8 @@ typedef union {
 typedef struct {
     const char *digits;                 /* Point to the hexadecimal subset */
     SecFormatBuf text;                  /* Point to formatted string */
+    SecBuffer buffer;
+    SecChar prefix[SECUREC_PREFIX_LEN]; /* Prefix is  0 or 0x */
     int textLen;                        /* Length of the text */
     int textIsWide;                     /* Flag for text is wide chars ; 0 is not wide char */
     unsigned int radix;                 /* Use for output number , default set to 10 */
@@ -109,8 +111,6 @@ typedef struct {
     int dynPrecision;                   /* %.*  1 precision from variable parameter ;0 not */
     int padding;                        /* Padding len */
     int prefixLen;                      /* Length of prefix, 0 or 1 or 2 */
-    SecChar prefix[SECUREC_PREFIX_LEN]; /* Prefix is  0 or 0x */
-    SecBuffer buffer;
 } SecFormatAttr;
 
 #if SECUREC_ENABLE_SPRINTF_FLOAT
@@ -843,24 +843,36 @@ SECUREC_INLINE void SecDecodeFlags(SecChar ch, SecFormatAttr *attr)
  */
 SECUREC_INLINE int SecDecodeSizeI(SecFormatAttr *attr, const SecChar **format)
 {
+    const SecChar *formatOri = *format;
 #ifdef SECUREC_ON_64BITS
     attr->flags |= SECUREC_FLAG_I64;    /* %I  to  INT64 */
 #endif
-    if ((**format == SECUREC_CHAR('6')) && (*((*format) + 1) == SECUREC_CHAR('4'))) {
-        (*format) += 2; /* Add 2 to skip I64 */
-        attr->flags |= SECUREC_FLAG_I64;    /* %I64  to  INT64 */
-    } else if ((**format == SECUREC_CHAR('3')) && (*((*format) + 1) == SECUREC_CHAR('2'))) {
-        (*format) += 2; /* Add 2 to skip I32 */
-        attr->flags &= ~SECUREC_FLAG_I64;   /* %I64  to  INT32 */
-    } else if ((**format == SECUREC_CHAR('d')) || (**format == SECUREC_CHAR('i')) ||
-        (**format == SECUREC_CHAR('o')) || (**format == SECUREC_CHAR('u')) ||
-        (**format == SECUREC_CHAR('x')) || (**format == SECUREC_CHAR('X'))) {
-        /* Do nothing */
-    } else {
-        /* Compatibility  code for "%I" just print I */
-        return -1;
+    switch (formatOri[0]) {
+        case SECUREC_CHAR('6'):
+            if (formatOri[1] == SECUREC_CHAR('4')) {
+                *format = formatOri + 2;
+                attr->flags |= SECUREC_FLAG_I64;
+                return 0;
+            }
+            break;
+        case SECUREC_CHAR('3'):
+            if (formatOri[1] == SECUREC_CHAR('2')) {
+                *format = formatOri + 2;
+                attr->flags &= ~SECUREC_FLAG_I64;
+                return 0;
+            }
+            break;
+        case SECUREC_CHAR('d'):
+        case SECUREC_CHAR('i'):
+        case SECUREC_CHAR('o'):
+        case SECUREC_CHAR('u'):
+        case SECUREC_CHAR('x'):
+        case SECUREC_CHAR('X'):
+            return 0;
+        default:
+            return -1;
     }
-    return 0;
+    return -1;
 }
 
 /*
@@ -1304,22 +1316,13 @@ SECUREC_INLINE int SecInitFloatBuffer(SecFloatAdapt *floatAdapt, const SecChar *
      * Calc buffer size to store double value
      * The maximum length of SECUREC_MAX_WIDTH_LEN is enough
      */
-    if ((attr->flags & SECUREC_FLAG_LONG_DOUBLE) != 0) {
-        if (attr->precision > (SECUREC_MAX_WIDTH_LEN - SECUREC_FLOAT_BUFSIZE_LB)) {
-            return -1;
-        }
-        /* Long double needs to meet the basic print length */
-        floatAdapt->bufferSize = SECUREC_FLOAT_BUFSIZE_LB + attr->precision + SECUREC_FLOAT_BUF_EXT;
-    } else {
-        if (attr->precision > (SECUREC_MAX_WIDTH_LEN - SECUREC_FLOAT_BUFSIZE)) {
-            return -1;
-        }
-        /* Double needs to meet the basic print length */
-        floatAdapt->bufferSize = SECUREC_FLOAT_BUFSIZE + attr->precision + SECUREC_FLOAT_BUF_EXT;
-    }
-    if (attr->fldWidth > floatAdapt->bufferSize) {
-        floatAdapt->bufferSize = attr->fldWidth + SECUREC_FLOAT_BUF_EXT;
-    }
+    int baseSize = ((attr->flags & SECUREC_FLAG_LONG_DOUBLE) != 0) ?
+                    SECUREC_FLOAT_BUFSIZE_LB : SECUREC_FLOAT_BUFSIZE;
+    if (attr->precision > (SECUREC_MAX_WIDTH_LEN - baseSize))
+        return -1;
+    int fAbufferSize = baseSize + attr->precision + SECUREC_FLOAT_BUF_EXT;
+    floatAdapt->bufferSize = (attr->fldWidth > fAbufferSize) ?
+        attr->fldWidth + SECUREC_FLOAT_BUF_EXT : fAbufferSize;
 
     if (floatAdapt->bufferSize > SECUREC_BUFFER_SIZE) {
         /* The current value of SECUREC_BUFFER_SIZE could not store the formatted float string */
@@ -1467,18 +1470,18 @@ SECUREC_INLINE int SecOutput(SecPrintfStream *stream, const SecChar *cFormat, va
     SecFmtState state;
     SecFormatAttr formatAttr;
 
-    formatAttr.flags = 0;
+    formatAttr.textLen = 0;
     formatAttr.textIsWide = 0;    /* Flag for buffer contains wide chars */
+    formatAttr.radix = SECUREC_RADIX_DECIMAL;
+    formatAttr.flags = 0;
     formatAttr.fldWidth = 0;
     formatAttr.precision = 0;
     formatAttr.dynWidth = 0;
     formatAttr.dynPrecision = 0;
-    formatAttr.digits = g_itoaUpperDigits;
-    formatAttr.radix = SECUREC_RADIX_DECIMAL;
     formatAttr.padding = 0;
-    formatAttr.textLen = 0;
-    formatAttr.text.str = NULL;
     formatAttr.prefixLen = 0;
+    formatAttr.digits = g_itoaUpperDigits;
+    formatAttr.text.str = NULL;
     formatAttr.prefix[0] = SECUREC_CHAR('\0');
     formatAttr.prefix[1] = SECUREC_CHAR('\0');
     charsOut = 0;
@@ -1497,14 +1500,14 @@ SECUREC_INLINE int SecOutput(SecPrintfStream *stream, const SecChar *cFormat, va
             case STAT_PERCENT:
                 /* Set default values */
                 noOutput = 0;
-                formatAttr.prefixLen = 0;
                 formatAttr.textLen = 0;
+                formatAttr.textIsWide = 0;
                 formatAttr.flags = 0;
                 formatAttr.fldWidth = 0;
                 formatAttr.precision = -1;
-                formatAttr.textIsWide = 0;
                 formatAttr.dynWidth = 0;
                 formatAttr.dynPrecision = 0;
+                formatAttr.prefixLen = 0;
                 break;
             case STAT_FLAG:
                 /* Set flag based on which flag character */
